@@ -1,6 +1,8 @@
 package main
 
-import "strconv"
+import (
+	"strconv"
+)
 
 type Value struct {
 	// datatype
@@ -24,8 +26,9 @@ func (v Value) marshalArray() []byte {
 	var b []byte
 	b = append(b, ARRAY)
 	b = append(b, strconv.Itoa(len)...)
+	b = append(b, CLRF...)
 
-	for i := 0; i < len; i++ {
+	for i := range len {
 		b = append(b, v.array[i].Marshal()...)
 	}
 

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 // *3 Indicates Array of size 3
@@ -27,8 +28,23 @@ func main() {
 			os.Exit(1)
 		}
 
-		fmt.Printf("Received value: %v\n", value)
+		if value.typ != "array" || len(value.array) == 0 {
+			fmt.Println("Invalid request")
+			continue
+		}
+
+		cmd := strings.ToUpper(value.array[0].bulk)
+		args := value.array[1:]
 		writer := NewWriter(conn)
-		writer.Write(Value{typ: "string", str: "OK"})
+
+		handler, ok := Handlers[cmd]
+		if !ok {
+			fmt.Println("Invalid command", cmd)
+			writer.Write(Value{typ: "string", str: ""})
+			continue
+		}
+
+		res := handler(args)
+		writer.Write(res)
 	}
 }
